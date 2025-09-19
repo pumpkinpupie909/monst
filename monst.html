@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>モンスト適正検索</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 10px;          /* 全体の余白を小さく */
+      /*max-width: 480px;*/        /* スマホ向け幅 */
+      margin: 0 auto;          /* 中央揃え */
+      background-color: #f9f9f9; /* 背景色で見やすく */
+    }
+
+    h1 {
+      font-size: 5em;/*モンスト適正検索の文字*/
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 3.5em;/*属性文字サイズ*/
+    }
+
+    select, button {
+      width: 100%;             /* 幅をコンテンツに合わせる */
+      padding: 20px;            /* 押しやすく */
+      margin-top: 10px;
+      font-size: 3em;/*ボタンの文字サイズ*/
+      box-sizing: border-box;
+    }
+
+    select[multiple] {
+      height: auto;            /* 高さ自動調整 */
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>モンスト適正検索</h1>
+
+  <label><span class="label-text">属性:</span></label>
+  <select id="element">
+    <option value="">--選択--</option>
+    <option value="火">火</option>
+    <option value="水">水</option>
+    <option value="木">木</option>
+    <option value="光">光</option>
+    <option value="闇">闇</option>
+  </select><br>
+
+  <label>撃種/アビリティ（複数選択可）:</label><br>
+  <select id="ability" multiple size="12">
+　　<option>反射</option>
+　　<option>貫通</option>
+    <option>重力バリア</option>
+    <option>ダメージウォール</option>
+    <option>ワープ</option>
+    <option>マインスイーパー/飛行</option>
+    <option>ブロック</option>
+　　<option>ウィンド</option>
+    <option>魔法陣</option>
+    <option>減速壁</option>
+　　<option>転送壁</option>
+　　<option>減速床</option>
+  </select><br>
+
+  <button onclick="search()">検索</button>
+
+  <div id="result" style="font-size:50px;margin-top:15px; font-weight:bold;"></div>
+
+<script>
+  const quests = [
+    {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"]},
+    {name:"天魔の孤城試練２", element:"木", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","反射"]},
+    {name:"天魔の孤城試練３", element:"火", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","貫通"]},
+    {name:"天魔の孤城試練４", element:"光", require:["マインスイーパー/飛行","減速壁","反射"]},
+　　{name:"天魔の孤城試練５", element:"闇", require:["重力バリア","ダメージウォール","貫通"]},
+　　{name:"天魔の孤城試練６", element:"水", require:["重力バリア","ダメージウォール","ウィンド","減速壁","反射"]},
+　　{name:"天魔の孤城試練７", element:"木", require:["転送壁"]},
+　　{name:"天魔の孤城試練８", element:"火", require:["ワープ","減速壁"]},
+    {name:"天魔の孤城試練９", element:"光", require:["重力バリア","転送壁"]},
+　　{name:"天魔の孤城試練１０", element:"", require:["重力バリア","マインスイーパー/飛行","ブロック","魔法陣"]},
+　　{name:"天魔の孤城空中庭園１", element:"闇", require:["ダメージウォール","マインスイーパー/飛行","ブロック","反射"]},
+　　{name:"天魔の孤城空中庭園２", element:"光", require:["ダメージウォール","ブロック","転送壁"]},
+　　{name:"天魔の孤城空中庭園３", element:"水", require:["ダメージウォール","マインスイーパー/飛行","重力バリア"]},
+　　{name:"天魔の孤城空中庭園４", element:"火", require:["重力バリア","マインスイーパー/飛行","ワープ","反射"]},
+　　{name:"天魔の孤城空中庭園５", element:"木", require:["貫通","ブロック","魔法陣","減速壁"]},
+　　{name:"天魔の孤城空中庭園６", element:"闇", require:["ワープ","減速壁","貫通"]},
+　　{name:"天魔の孤城空中庭園７", element:"光", require:["ダメージウォール","重力バリア","ブロック","マインスイーパー/飛行"]},
+　　{name:"天魔の孤城空中庭園８", element:"水", require:["重力バリア","魔法陣","転送壁","反射"]},
+　　{name:"天魔の孤城空中庭園９", element:"火", require:["減速壁","マインスイーパー/飛行","ブロック","反射"]},
+　　{name:"天魔の孤城空中庭園１０", element:"", require:["転送壁","マインスイーパー/飛行","反射"]},
+    {name:"黎絶アレスター", element:"水", require:["ワープ","マインスイーパー/飛行","ブロック"]},
+　　{name:"黎絶アジテーター", element:"木", require:["転送壁","ワープ"]},
+　　{name:"黎絶ロヴァー", element:"火", require:["転送壁"]},
+　　{name:"黎絶フォーサー", element:"闇", require:["マインスイーパー/飛行","減速壁","貫通"]},
+　　{name:"黎絶エンベズラー", element:"光", require:["ワープ","転送壁"]},
+　　{name:"黎絶アブピッシャー", element:"水", require:["マインスイーパー/飛行","転送壁","反射"]},
+　　{name:"黎絶デティアカル", element:"木", require:["ダメージウォール","マインスイーパー/飛行","転送壁"]},
+　　{name:"黎絶コディエゴス", element:"火", require:["ワープ","マインスイーパー/飛行","減速壁"]},
+　　{name:"黎絶ビリミスク", element:"闇", require:["ワープ","ブロック","転送壁"]},
+　　{name:"黎絶ペグイル", element:"光", require:["マインスイーパー/飛行","ブロック","魔法陣","貫通"]},
+　　{name:"黎絶プロポバテ", element:"木", require:["減速壁","転送壁","反射"]},
+    {name:"轟絶ダウト", element:"木", require:["重力バリア","減速壁"]},
+　　{name:"轟絶ハービセル←クソ", element:"木", require:["重力バリア","マインスイーパー/飛行","反射"]},
+　　{name:"轟絶ハナレコグニ", element:"木", require:["ダメージウォール","ワープ","ウィンド"]},
+　　{name:"轟絶ムラクシャ", element:"光", require:["ワープ","減速壁","貫通"]},
+　　{name:"轟絶カカゴセデク", element:"火", require:["ワープ","転送壁","反射"]},
+　　{name:"轟絶ユビレギリ", element:"闇", require:["重力バリア","マインスイーパー/飛行","ブロック"]},
+　　{name:"轟絶ディスモルフォ", element:"木", require:["マインスイーパー/飛行","ブロック","転送壁","反射"]},
+　　{name:"轟絶アイクモ", element:"火", require:["ブロック","減速壁","反射"]},
+　　{name:"轟絶ペディオ", element:"光", require:["ブロック","減速壁","貫通"]},
+　　{name:"轟絶スケアトラ", element:"火", require:["重力バリア","マインスイーパー/飛行","ブロック"]},
+　　{name:"轟絶オーポレン", element:"闇", require:["ダメージウォール","ワープ","ブロック","減速壁","反射"]},
+　　{name:"轟絶アンコルウ", element:"光", require:["ブロック","魔法陣","転送壁","反射"]},
+    {name:"爆絶ホラー", element:"火", require:["マインスイーパー/飛行","ウィンド"]},
+    {name:"爆絶アアル", element:"闇", require:["ダメージウォール","ワープ","反射","ブロック"]},
+    {name:"爆絶カリ・ユガ", element:"木", require:["ワープ","減速壁","反射"]},
+　　{name:"EXリズム", element:"光", require:["ダメージウォール","マインスイーパー/飛行","減速床"]},
+    {name:"EXネッテキシ", element:"木", require:["ダメージウォール","反射","減速壁"]},
+　　{name:"EX涅槃寂静", element:"火", require:["魔法陣","貫通","ダメージウォール","ワープ","マインスイーパー/飛行"]},
+　　{name:"禁忌２８裏", element:"火", require:["ダメージウォール","ワープ","マインスイーパー/飛行"]},
+　　{name:"禁忌深淵火", element:"水", require:["ダメージウォール","ワープ","マインスイーパー/飛行","貫通"]},
+　　{name:"禁忌深淵水", element:"木", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"]},
+　　{name:"禁忌深淵木", element:"火", require:["重力バリア","ダメージウォール","マインスイーパー/飛行"]},
+　　{name:"禁忌深淵闇", element:"光", require:["重力バリア","マインスイーパー/飛行","貫通"]},
+　　{name:"禁忌深淵光", element:"闇", require:["ワープ","転送壁"]},
+　　{name:"パライソの星墓", element:"火", require:["ダメージウォール","ワープ","マインスイーパー/飛行","反射"]},
+　　{name:"黄泉の星墓", element:"光", require:["重力バリア","ダメージウォール","マインスイーパー/飛行"]},
+　　{name:"ティルナノーグの星墓", element:"木", require:["重力バリア","ダメージウォール","減速壁","貫通"]},
+　　{name:"アアルの星墓", element:"闇", require:["ワープ","ウィンド","減速床"]},
+　　{name:"アヴァロンの星墓(飛行×)", element:"水", require:["マインスイーパー/飛行","ブロック","減速壁","貫通"]},
+　　{name:"シャンバラの星墓", element:"火", require:["ダメージウォール","ワープ","減速壁","貫通"]},
+　　{name:"アポカリプスの星墓", element:"光", require:["重力バリア","ワープ","減速壁","貫通"]},
+　　{name:"アラミタマの星墓", element:"木", require:["ダメージウォール","マインスイーパー/飛行","ウィンド","反射"]},
+　　{name:"アラミタマの星墓", element:"火", require:["ダメージウォール","マインスイーパー/飛行","ウィンド","反射"]},
+　　{name:"ラブの星墓", element:"闇", require:["減速壁","転送壁","反射"]},
+　　{name:"パラノヴィアの星墓", element:"", require:["ダメージウォール","ワープ","魔法陣","減速壁","反射"]},
+　　{name:"アムネディア", element:"火", require:["重力バリア","魔法陣","ウィンド","貫通"]},
+    {name:"超究極・傑チェルノボグ", element:"闇", require:["マインスイーパー/飛行","減速床"]},
+  ];
+
+  function search() {
+    const element = document.getElementById("element").value;
+    const ability = Array.from(document.getElementById("ability").selectedOptions).map(o=>o.value);
+
+    const result = quests.filter(q => {
+      const abilitiesOk = q.require.every(r => ability.includes(r));
+      const elementOk = !element || q.element === element;
+      return abilitiesOk && elementOk;
+    });
+
+    document.getElementById("result").innerHTML =
+      result.length > 0
+        ? result.map(r=> r.name).join("<br>")
+        : "<span class='no-result'>該当なし</span>";
+  }
+</script>
+</body>
+</html>

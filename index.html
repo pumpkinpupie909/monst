@@ -110,7 +110,7 @@
 　　{name:"天魔の孤城空中庭園７", element:"光", require:["ダメージウォール","重力バリア","ブロック","マインスイーパー/飛行"]},
 　　{name:"天魔の孤城空中庭園８", element:"水", require:["重力バリア","魔法陣","転送壁","反射"]},
 　　{name:"天魔の孤城空中庭園９", element:"火", require:["減速壁","マインスイーパー/飛行","ブロック","反射"]},
-    {name:"天魔の孤城空中庭園１０", element:["火","水","木","光","闇"], require:["転送壁","マインスイーパー/飛行","反射"]},
+    {name:"天魔の孤城空中庭園１０", element:"all", require:["転送壁","マインスイーパー/飛行","反射"]},
     {name:"黎絶アレスター", element:"水", require:["ワープ","マインスイーパー/飛行","ブロック"]},
 　　{name:"黎絶アジテーター", element:"木", require:["転送壁","ワープ"]},
 　　{name:"黎絶ロヴァー", element:"火", require:["転送壁"]},
@@ -167,7 +167,9 @@
 
     const result = quests.filter(q => {
       const abilitiesOk = q.require.every(r => ability.includes(r));
-      const elementOk = !element || q.element === element;
+      const elementOk = !element || 
+        q.element === "all" ||
+  (Array.isArray(q.element) ? q.element.includes(element) : q.element === element);
       return abilitiesOk && elementOk;
     });
 

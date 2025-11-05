@@ -1,97 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>モンスト適正検索</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 10px;          /* 全体の余白を小さく */
-      /*max-width: 480px;*/        /* スマホ向け幅 */
-      margin: 0 auto;          /* 中央揃え */
-      background-color: #f9f9f9; /* 背景色で見やすく */
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>モンスト適正検索</title>
+<style>
+  body {
+    font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    margin: 20px;
+    background: #fff;
+    color: #000;
+    text-align: center;
+  }
+  h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
 
-    h1 {
-      font-size: 5em;/*モンスト適正検索の文字*/
-      text-align: center;
-      margin-bottom: 15px;
-    }
+  /* ラベル文字を大きく */
+  label {
+    font-size: 1.4em;
+    font-weight: bold;
+  }
 
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 3.5em;/*属性文字サイズ*/
-    }
+  select, button {
+    margin: 10px 0;
+  }
 
-    select, button {
-      width: 100%;             /* 幅をコンテンツに合わせる */
-      padding: 20px;            /* 押しやすく */
-      margin-top: 10px;
-      font-size: 3em;/*ボタンの文字サイズ*/
-      box-sizing: border-box;
-    }
+  button {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.5em;
+    border-radius: 8px;
+    cursor: pointer;
+  }
 
-    select[multiple] {
-      height: auto;            /* 高さ自動調整 */
-    }
+  /* アビリティ選択ボタン */
+  #openAbilityDialog {
+    background: #fff;
+    color: #000;
+    border: 2px solid #4CAF50;
+  }
 
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 15px;
-    }
+  /* 検索ボタン */
+  #searchButton {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+  }
 
-    button:hover {
-      background-color: #45a049;
-    }
+  /* 検索ボタン無効時 */
+  #searchButton:disabled {
+    background: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
 
-    #result {
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: center;
-    }
-  </style>
+  #results {
+    margin-top: 30px;
+    font-size: 1.2em;
+  }
+
+  /* ポップアップ */
+  #abilityDialog {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+  }
+  #abilityDialogContent {
+    background: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 480px;
+    border-radius: 15px;
+    font-size: 1.2em;
+    line-height: 1.6;
+    text-align: left;
+  }
+  #abilityDialog label {
+    display: block;
+    margin: 8px 0;
+    font-size: 1.1em;
+  }
+  #abilityDialog input[type=checkbox] {
+    transform: scale(1.5);
+    margin-right: 8px;
+  }
+  #abilityDialog button {
+    margin-top: 15px;
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background: #4CAF50;
+    color: #fff;
+  }
+  #element {
+  font-size: 1.5em; /* 文字サイズを大きく */
+  padding: 8px 12px; /* 内側に余白を追加 */
+  width: 350px; /* ボックスの横幅を広く */
+}
+</style>
 </head>
 <body>
-  <h1>モンスト適正検索</h1>
 
-  <label><span class="label-text">属性:</span></label>
-  <select id="element">
-    <option value="">--選択--</option>
-    <option value="火">火</option>
-    <option value="水">水</option>
-    <option value="木">木</option>
-    <option value="光">光</option>
-    <option value="闇">闇</option>
-  </select><br>
+<h1>モンスト適正検索</h1>
 
-  <label>撃種/アビリティ（複数選択可）:</label><br>
-  <select id="ability" multiple size="12">
-　　<option>反射</option>
-　　<option>貫通</option>
-    <option>重力バリア</option>
-    <option>ダメージウォール</option>
-    <option>ワープ</option>
-    <option>マインスイーパー/飛行</option>
-    <option>ブロック</option>
-　　<option>ウィンド</option>
-    <option>魔法陣</option>
-    <option>減速壁</option>
-　　<option>転送壁</option>
-　　<option>減速床</option>
-  </select><br>
+<label for="element">属性:</label><br>
+<select id="element">
+  <option value="">--選択--</option>
+  <option value="火">火</option>
+  <option value="水">水</option>
+  <option value="木">木</option>
+  <option value="光">光</option>
+  <option value="闇">闇</option>
+</select>
 
-  <button onclick="search()">検索</button>
+<br><br>
 
-  <div id="result" style="font-size:50px;margin-top:15px; font-weight:bold;"></div>
+<label>撃種/アビリティ（複数選択可）：</label><br>
+<button id="openAbilityDialog">アビリティを選択</button>
+<br>
+<button id="searchButton" disabled>検索</button>
+
+<div id="results"></div>
+
+<!-- アビリティ選択ポップアップ -->
+<div id="abilityDialog">
+  <div id="abilityDialogContent">
+    <h2>アビリティを選択</h2>
+    <label><input type="checkbox" value="反射">反射</label>
+    <label><input type="checkbox" value="貫通">貫通</label>
+    <label><input type="checkbox" value="重力バリア">重力バリア</label>
+    <label><input type="checkbox" value="ダメージウォール">ダメージウォール</label>
+    <label><input type="checkbox" value="ワープ">ワープ</label>
+    <label><input type="checkbox" value="マインスイーパー/飛行">マインスイーパー/飛行</label>
+    <label><input type="checkbox" value="ブロック">ブロック</label>
+    <label><input type="checkbox" value="ウィンド">ウィンド</label>
+    <label><input type="checkbox" value="魔法陣">魔法陣</label>
+    <label><input type="checkbox" value="減速壁">減速壁</label>
+    <label><input type="checkbox" value="転送壁">転送壁</label>
+    <label><input type="checkbox" value="減速床">減速床</label>
+    <button id="confirmAbility">決定</button>
+    <button id="cancelAbility">閉じる</button>
+  </div>
+</div>
 
 <script>
+  // --- クエストデータ（自分で追加OK） ---
   const quests = [
-    {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"]},
+     {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"]},
     {name:"天魔の孤城試練２", element:"木", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","反射"]},
     {name:"天魔の孤城試練３", element:"火", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","貫通"]},
     {name:"天魔の孤城試練４", element:"光", require:["マインスイーパー/飛行","減速壁","反射"]},
@@ -107,7 +170,7 @@
 　　{name:"天魔の孤城空中庭園４", element:"火", require:["重力バリア","マインスイーパー/飛行","ワープ","反射"]},
 　　{name:"天魔の孤城空中庭園５", element:"木", require:["貫通","ブロック","魔法陣","減速壁"]},
 　　{name:"天魔の孤城空中庭園６", element:"闇", require:["ワープ","減速壁","貫通"]},
-　　{name:"天魔の孤城空中庭園７", element:"光", require:["ダメージウォール","重力バリア","ブロック","マインスイーパー/飛行"]},
+　　{name:"天魔の孤城空中庭園７", element:"光", require:["ダメージウォール","重力バリア","ブロック"]},
 　　{name:"天魔の孤城空中庭園８", element:"水", require:["重力バリア","魔法陣","転送壁","反射"]},
 　　{name:"天魔の孤城空中庭園９", element:"火", require:["減速壁","マインスイーパー/飛行","ブロック","反射"]},
     {name:"天魔の孤城空中庭園１０", element:"all", require:["転送壁","マインスイーパー/飛行","反射"]},
@@ -159,23 +222,48 @@
     {name:"超究極イザナミ", element:"水", require:["ブロック","魔法陣","ウィンド",]},
   ];
 
-  function search() {
+  const openDialog = document.getElementById("openAbilityDialog");
+  const dialog = document.getElementById("abilityDialog");
+  const confirmBtn = document.getElementById("confirmAbility");
+  const cancelBtn = document.getElementById("cancelAbility");
+  const searchBtn = document.getElementById("searchButton");
+  let selectedAbilities = [];
+
+  openDialog.onclick = () => {
+    dialog.style.display = "block";
+  };
+
+  confirmBtn.onclick = () => {
+    const checked = document.querySelectorAll("#abilityDialog input:checked");
+    selectedAbilities = Array.from(checked).map(cb => cb.value);
+    dialog.style.display = "none";
+    openDialog.textContent = selectedAbilities.length
+      ? selectedAbilities.join(", ")
+      : "アビリティを選択";
+
+    // ✅ アビリティを選んだ時だけ検索ボタンを押せる
+    searchBtn.disabled = selectedAbilities.length === 0;
+  };
+
+  cancelBtn.onclick = () => {
+    dialog.style.display = "none";
+  };
+
+  // --- 検索処理 ---
+  searchBtn.onclick = () => {
     const element = document.getElementById("element").value;
-    const ability = Array.from(document.getElementById("ability").selectedOptions).map(o=>o.value);
+    const resultsDiv = document.getElementById("results");
 
-    const result = quests.filter(q => {
-      const abilitiesOk = q.require.every(r => ability.includes(r));
-      const elementOk = !element || 
-        q.element === "all" ||
-  (Array.isArray(q.element) ? q.element.includes(element) : q.element === element);
-      return abilitiesOk && elementOk;
-    });
+    const results = quests.filter(q =>
+      (!element || q.element === element) &&
+      q.require.every(req => selectedAbilities.includes(req))
+    );
 
-    document.getElementById("result").innerHTML =
-      result.length > 0
-        ? result.map(r=> r.name).join("<br>")
-        : "<span class='no-result'>該当なし</span>";
-  }
+    resultsDiv.innerHTML = results.length
+      ? results.map(q => `・${q.name}`).join("<br>")
+      : "該当するクエストはありません。";
+  };
 </script>
+
 </body>
 </html>

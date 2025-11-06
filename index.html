@@ -255,9 +255,9 @@
     const resultsDiv = document.getElementById("results");
 
     const results = quests.filter(q =>
-      (!element || q.element === element) &&
-      q.require.every(req => selectedAbilities.includes(req))
-    );
+  (!element || q.element === element || q.element === "all") &&
+  q.require.every(req => selectedAbilities.includes(req))
+);
 
     resultsDiv.innerHTML = results.length
       ? results.map(q => `・${q.name}`).join("<br>")

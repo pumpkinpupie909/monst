@@ -5,34 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>モンスト適正検索</title>
 <style>
-  //🗡️キラー一覧の開閉処理
-const showKillersBtn = document.getElementById("showKillersBtn");
-const killersList = document.getElementById("killersList");
-const killerSearch = document.getElementById("killerSearch");
-const killerTable = document.getElementById("killerTable");
 
-//ボタンを押したら表示/非表示を切り替える
-showKillersBtn.addEventListener("click", () => {
-  if (killersList.style.display === "none" || killersList.style.display === "") {
-    killersList.style.display = "block";
-    showKillersBtn.textContent = "🗡️ キラー一覧を閉じる";
-  } else {
-    killersList.style.display = "none";
-    showKillersBtn.textContent = "🗡️ キラー一覧を表示";
-  }
-});
-
-// 🔍 キラー名検索機能
-killerSearch.addEventListener("input", () => {
-  const filter = killerSearch.value.toLowerCase();
-  const rows = killerTable.getElementsByTagName("tr");
-
-  for (let i = 1; i < rows.length; i++) { // 1行目はヘッダーなのでスキップ
-    const cells = rows[i].getElementsByTagName("td");
-    const text = Array.from(cells).map(td => td.textContent.toLowerCase()).join(" ");
-    rows[i].style.display = text.includes(filter) ? "" : "none";
-  }
-});
 
   body {
     font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
@@ -432,6 +405,35 @@ resultsDiv.querySelectorAll(".quest-item").forEach(item => {
 });
 
   };
+
+   //🗡️キラー一覧の開閉処理
+const showKillersBtn = document.getElementById("showKillersBtn");
+const killersList = document.getElementById("killersList");
+const killerSearch = document.getElementById("killerSearch");
+const killerTable = document.getElementById("killerTable");
+
+//ボタンを押したら表示/非表示を切り替える
+showKillersBtn.addEventListener("click", () => {
+  if (killersList.style.display === "none" || killersList.style.display === "") {
+    killersList.style.display = "block";
+    showKillersBtn.textContent = "🗡️ キラー一覧を閉じる";
+  } else {
+    killersList.style.display = "none";
+    showKillersBtn.textContent = "🗡️ キラー一覧を表示";
+  }
+});
+
+// 🔍 キラー名検索機能
+killerSearch.addEventListener("input", () => {
+  const filter = killerSearch.value.toLowerCase();
+  const rows = killerTable.getElementsByTagName("tr");
+
+  for (let i = 1; i < rows.length; i++) { // 1行目はヘッダーなのでスキップ
+    const cells = rows[i].getElementsByTagName("td");
+    const text = Array.from(cells).map(td => td.textContent.toLowerCase()).join(" ");
+    rows[i].style.display = text.includes(filter) ? "" : "none";
+  }
+});
   <script>
 // 🗡️ キラー一覧を開閉
 document.getElementById("showKillersBtn").addEventListener("click", () => {

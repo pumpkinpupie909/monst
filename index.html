@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>モンスト適正検索</title>
+<title>モンスト適正検索1</title>
 <style>
 
 
@@ -345,13 +345,20 @@
     dialog.style.display = "block";
   };
 
-  confirmBtn.onclick = () => {
-    const checked = document.querySelectorAll("#abilityDialog input:checked");
-    selectedAbilities = Array.from(checked).map(cb => cb.value);
-    dialog.style.display = "none";
-    openDialog.textContent = selectedAbilities.length
-      ? selectedAbilities.join(", ")
-      : "アビリティを選択";
+ confirmBtn.onclick = () => {
+  const checked = document.querySelectorAll("#abilityDialog input:checked");
+  selectedAbilities = Array.from(checked).map(cb => cb.value);
+  dialog.style.display = "none";
+
+  // ボタンのテキストだけ更新
+  openDialog.innerText = selectedAbilities.length
+    ? selectedAbilities.join(", ")
+    : "アビリティを選択";
+
+  // 検索ボタンの有効/無効
+  searchBtn.disabled = selectedAbilities.length === 0;
+};
+
 
     // ✅ アビリティを選んだ時だけ検索ボタンを押せる
     searchBtn.disabled = selectedAbilities.length === 0;

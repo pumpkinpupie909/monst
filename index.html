@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>モンスト適正検索1</title>
+<title>モンスト適正検索</title>
 <style>
-
-
   body {
     font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
     margin: 20px;
@@ -72,19 +70,20 @@
     width: 100%; height: 100%;
     background: rgba(0,0,0,0.5);
   }
-  #abilityDialogContent {
-    background: #fff;
-    margin: 5% auto;/*アビリティを選択の上の空白*/
-    padding: 20px;
-    width: 90%;
-    max-width: 480px;
-    border-radius: 15px;
-    font-size: 1.2em;
-    line-height: 1.6;
-    text-align: left;
-    max-height: 80vh;
-  overflow-y: auto;
-  }
+ #abilityDialogContent {
+  background: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;  /* 画面高さの90%までに制限 */
+  overflow-y: auto;  /* 縦スクロールを可能にする */
+  border-radius: 15px;
+  font-size: 1.2em;
+  line-height: 1.6;
+  text-align: left;
+}
+
   #abilityDialog label {
     display: block;
     margin: 8px 0;
@@ -104,73 +103,6 @@
     background: #4CAF50;
     color: #fff;
   }
-  #element {
-  font-size: 1.5em; /* 文字サイズを大きく */
-  padding: 8px 12px; /* 内側に余白を追加 */
-  width: 350px; /* ボックスの横幅を広く */
-}
-  /* クエスト詳細ポップアップ */
-.popup {
-  display: none; /* 最初は非表示 */
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* 背景を半透明に */
-  justify-content: center;
-  align-items: center;
-}
-
-.popup-content {
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  width: 80%;
-  max-width: 420px;
-  text-align: left;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.2s ease-out;
-}
-
-.close-btn {
-  float: right;
-  font-size: 24px;
-  cursor: pointer;
-  color: #555;
-}
-
-.close-btn:hover {
-  color: #000;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* 検索結果のクエスト名をクリックできるように */
-.quest-item {
-  cursor: pointer;
-  color: #0078d7;
-  text-decoration: underline;
-}
-.quest-item:hover {
-  color: #0055a4;
-}
-  
-/* クエスト詳細ポップアップが非表示のときはクリックをブロックしない */
-#questDetailPopup:not([style*="display: block"]) {
-  pointer-events: none;
-}
-
-#openAbilityDialog,
-#killerListButton {
-  position: relative;
-  z-index: 2001;
-}
-
 </style>
 </head>
 <body>
@@ -193,48 +125,6 @@
 <button id="openAbilityDialog">アビリティを選択</button>
 <br>
 <button id="searchButton" disabled>検索</button>
-  <br>
-<!-- 🔹 キラー一覧を開くボタン -->
-<button id="showKillersBtn" style="font-size: 0.9em; padding: 6px 10px; margin-top: 5px;">
-  🗡️ キラー一覧を表示
-</button>
-
-<!-- 🔹 キラー一覧（クリックで詳細なし） -->
-<div id="killersList" style="
-  display: none;
-  margin-top: 10px;
-  font-size: 13px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px;
-  background: #fff;
-">
-  <strong>🔸 キラー・封じ一覧</strong><br><br>
-
-  <!-- 🔍 検索ボックス -->
-  <input id="killerSearch" type="text" placeholder="キラー名・種族名で検索" style="
-    width: 100%;
-    padding: 6px;
-    margin-bottom: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 13px;
-  ">
-
-  <table id="killerTable" style="width:100%; border-collapse: collapse; font-size: 13px;">
-    <tr>
-      <th style="border-bottom:1px solid #ccc;">キラー/封じ名</th>
-      <th style="border-bottom:1px solid #ccc;">対象種族</th>
-      <th style="border-bottom:1px solid #ccc;">効果説明</th>
-    </tr>
-    <tr><td>神キラー</td><td>神族</td><td>神族の敵に対して攻撃力1.5倍。</td></tr>
-    <tr><td>神王封じ</td><td>神族・魔王</td><td>神族と魔王の両方に対して有効。</td></tr>
-    <tr><td>魔族キラー</td><td>魔族</td><td>魔族の敵に対して攻撃力が上昇。</td></tr>
-    <tr><td>幻獣封じ</td><td>幻獣・魔族</td><td>幻獣と魔族の敵に対して攻撃力が上昇。</td></tr>
-    <tr><td>妖精キラー</td><td>妖精族</td><td>妖精族の敵に対して有効。</td></tr>
-  </table>
-</div>
-
 
 <div id="results"></div>
 
@@ -249,7 +139,6 @@
     <label><input type="checkbox" value="ワープ">ワープ</label>
     <label><input type="checkbox" value="マインスイーパー/飛行">マインスイーパー/飛行</label>
     <label><input type="checkbox" value="ブロック">ブロック</label>
-    <label><input type="checkbox" value="ウィンド">ウィンド</label>
     <label><input type="checkbox" value="魔法陣">魔法陣</label>
     <label><input type="checkbox" value="減速壁">減速壁</label>
     <label><input type="checkbox" value="転送壁">転送壁</label>
@@ -262,7 +151,7 @@
 <script>
   // --- クエストデータ（自分で追加OK） ---
   const quests = [
-     {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"],description:"雑魚：幻獣・神・魔族\nボス：神\n \n感染毒があるので異常状態回復系が有利",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354183"},
+   {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"],description:"雑魚：幻獣・神・魔族\nボス：神\n \n感染毒があるので異常状態回復系が有利",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354183"},
     {name:"天魔の孤城試練２", element:"木", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","反射"],description:"雑魚：サムライ・ドラゴン\nボス：サムライ",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354184"},
     {name:"天魔の孤城試練３", element:"火", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","貫通"],description:"雑魚：神・魔族・幻獣\nボス；神\n \n個別HPなのである程度対応していなくても攻略可",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354185"},
     {name:"天魔の孤城試練４", element:"光", require:["マインスイーパー/飛行","減速壁","反射"],description:"雑魚：神\nボス：神\n　\nブロックがあるとやりやすい",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354186"},
@@ -345,20 +234,13 @@
     dialog.style.display = "block";
   };
 
- confirmBtn.onclick = () => {
-  const checked = document.querySelectorAll("#abilityDialog input:checked");
-  selectedAbilities = Array.from(checked).map(cb => cb.value);
-  dialog.style.display = "none";
-
-  // ボタンのテキストだけ更新
-  openDialog.innerText = selectedAbilities.length
-    ? selectedAbilities.join(", ")
-    : "アビリティを選択";
-
-  // 検索ボタンの有効/無効
-  searchBtn.disabled = selectedAbilities.length === 0;
-};
-
+  confirmBtn.onclick = () => {
+    const checked = document.querySelectorAll("#abilityDialog input:checked");
+    selectedAbilities = Array.from(checked).map(cb => cb.value);
+    dialog.style.display = "none";
+    openDialog.textContent = selectedAbilities.length
+      ? selectedAbilities.join(", ")
+      : "アビリティを選択";
 
     // ✅ アビリティを選んだ時だけ検索ボタンを押せる
     searchBtn.disabled = selectedAbilities.length === 0;
@@ -370,108 +252,62 @@
 
   // --- 検索処理 ---
   searchBtn.onclick = () => {
-    const element = document.getElementById("element").value;
-    const resultsDiv = document.getElementById("results");
+  const element = document.getElementById("element").value;
+  const resultsDiv = document.getElementById("results");
 
-    const results = quests.filter(q =>
-  (!element || q.element === element || q.element === "all") &&
-  q.require.every(req => selectedAbilities.includes(req))
-);
+  // アビリティと属性でフィルター
+  const results = quests.filter(q =>
+    (!element || q.element === element || q.element === "all")
+ &&
+    selectedAbilities.every(ab => q.require.includes(ab))  // ←ここを q.require に変更
+  );
 
-    resultsDiv.innerHTML = results.length
-  ? results.map(q => `・<span class="quest-item" data-name="${q.name}">${q.name}</span>`).join("<br>")
-  : "該当するクエストはありません。";
+  if(results.length){
+    // 検索結果をクリック可能に表示
+    resultsDiv.innerHTML = results.map((q,index) => 
+      `<div class="resultItem" data-index="${index}" style="cursor:pointer; color:#4CAF50; text-decoration:underline;">・${q.name}</div>`
+    ).join("");
 
-// ✅ クエスト名クリックで詳細ポップアップを表示
-resultsDiv.querySelectorAll(".quest-item").forEach(item => {
-  item.addEventListener("click", () => {
-    const questName = item.dataset.name;
-    const quest = quests.find(q => q.name === questName);
-
-    if (quest) {
-      const popup = document.getElementById("questDetailPopup");
-      const popupDetail = document.getElementById("popupDetail");
-      const closeBtn = document.getElementById("closePopup");
-
-      popupDetail.innerHTML = `
-        <h3>${quest.name}</h3>
-        <p><strong>属性:</strong> ${quest.element}</p>
-        <p><strong>必要ギミック:</strong> ${quest.require.join(" / ")}</p>
-        <p><strong>詳細:</strong><br>${(quest.description || "（詳細未登録）").replace(/\n/g, "<br>")}</p>
-        ${quest.url ? `<p><a href="${quest.url}" target="_blank">▶ クエスト攻略ページを開く</a></p>` : ""}
-      `;
-
-      popup.style.display = "flex";
-
-      closeBtn.onclick = () => (popup.style.display = "none");
-      popup.onclick = e => {
-        if (e.target === popup) popup.style.display = "none";
+    // クリックでポップアップ表示
+    document.querySelectorAll(".resultItem").forEach(item => {
+      item.onclick = () => {
+        const q = results[item.dataset.index];
+        document.getElementById("resultTitle").textContent = q.name;
+        document.getElementById("resultDescription").textContent = q.description;
+        document.getElementById("resultURL").href = q.url;
+        document.getElementById("resultDialog").style.display = "block";
       };
-    }
-  });
-});
-
-  };
-
-   //🗡️キラー一覧の開閉処理
-const showKillersBtn = document.getElementById("showKillersBtn");
-const killersList = document.getElementById("killersList");
-const killerSearch = document.getElementById("killerSearch");
-const killerTable = document.getElementById("killerTable");
-
-//ボタンを押したら表示/非表示を切り替える
-showKillersBtn.addEventListener("click", () => {
-  if (killersList.style.display === "none" || killersList.style.display === "") {
-    killersList.style.display = "block";
-    showKillersBtn.textContent = "🗡️ キラー一覧を閉じる";
+    });
   } else {
-    killersList.style.display = "none";
-    showKillersBtn.textContent = "🗡️ キラー一覧を表示";
+    resultsDiv.innerHTML = "該当するクエストはありません。";
   }
-});
+};
 
-// 🔍 キラー名検索機能
-killerSearch.addEventListener("input", () => {
-  const filter = killerSearch.value.toLowerCase();
-  const rows = killerTable.getElementsByTagName("tr");
+   // 結果クリックで詳細表示
+  document.querySelectorAll(".resultItem").forEach(item => {
+      item.onclick = () => {
+        const q = results[item.dataset.index];
+        resultTitle.textContent = q.name;
+        resultDescription.textContent = q.description;
+        resultURL.href = q.url;
+        resultDialog.style.display = "block";
+      };
+  };
+  document.getElementById("closeResult").onclick = () => {
+  document.getElementById("resultDialog").style.display = "none";
+};
 
-  for (let i = 1; i < rows.length; i++) { // 1行目はヘッダーなのでスキップ
-    const cells = rows[i].getElementsByTagName("td");
-    const text = Array.from(cells).map(td => td.textContent.toLowerCase()).join(" ");
-    rows[i].style.display = text.includes(filter) ? "" : "none";
-  }
-});
-// 🗡️ キラー一覧を開閉
-document.getElementById("showKillersBtn").addEventListener("click", () => {
-  const list = document.getElementById("killersList");
-  list.style.display = list.style.display === "none" ? "block" : "none";
-});
-
-// 🔍 検索絞り込み機能
-document.getElementById("killerSearch").addEventListener("input", function() {
-  const keyword = this.value.toLowerCase();
-  const rows = document.querySelectorAll("#killerTable .killer");
-  rows.forEach(row => {
-    const name = row.getAttribute("data-name").toLowerCase();
-    const target = row.getAttribute("data-target").toLowerCase();
-    const desc = row.getAttribute("data-desc").toLowerCase();
-    // 検索対象を種族名・キラー対象・説明に拡張
-    row.style.display = (name.includes(keyword) || target.includes(keyword) || desc.includes(keyword))
-      ? ""
-      : "none";
-  });
-});
 </script>
-
-  <!-- クエスト詳細ポップアップ -->
-<div id="questDetailPopup" class="popup">
-  <div class="popup-content">
-    <span id="closePopup" class="close-btn">&times;</span>
-    <div id="popupDetail"></div>
+<!-- 検索結果ポップアップ -->
+<div id="resultDialog" style="display:none; position:fixed; z-index:11; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+  <div style="background:#fff; margin:10% auto; padding:20px; width:90%; max-width:480px; border-radius:15px; font-size:1.2em; line-height:1.6; text-align:left;">
+    <h2 id="resultTitle"></h2>
+    <p id="resultDescription"></p>
+    <a id="resultURL" href="" target="_blank" style="color:#4CAF50; text-decoration:underline;">攻略ページへ</a>
+    <br><br>
+    <button id="closeResult" style="background:#4CAF50; color:#fff; padding:10px 20px; border:none; border-radius:8px;">閉じる</button>
   </div>
 </div>
-  
-</script>
 
 </body>
 </html>

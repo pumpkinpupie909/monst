@@ -333,6 +333,7 @@ resultsDiv.querySelectorAll(".quest-item").forEach(item => {
         <p><strong>属性:</strong> ${quest.element}</p>
         <p><strong>必要ギミック:</strong> ${quest.require.join(" / ")}</p>
         <p><strong>詳細:</strong><br>${(quest.description || "（詳細未登録）").replace(/\n/g, "<br>")}</p>
+        ${quest.url ? `<p><a href="${quest.url}" target="_blank">▶ クエスト攻略ページを開く</a></p>` : ""}
       `;
 
       popup.style.display = "flex";

@@ -70,21 +70,22 @@
     width: 100%; height: 100%;
     background: rgba(0,0,0,0.5);
   }
- #abilityDialogContent {
+#abilityDialogContent {
   background: #fff;
   margin: 5% auto;
   padding: 20px;
   width: 90%;
   max-width: 480px;
-  /* 高さ固定なし → コンテンツに応じて伸びる */
+  max-height: 80vh; /* 画面の高さの80％まで */
   overflow-y: auto;  /* 縦スクロール可能 */
   border-radius: 15px;
   font-size: 1.2em;
   line-height: 1.6;
   text-align: left;
   display: flex;
-  flex-direction: column;  /* 子要素を縦に並べる */
+  flex-direction: column;
 }
+
 
 #abilityDialog label {
   display: flex;
@@ -250,26 +251,19 @@
     searchBtn.disabled = selectedAbilities.length === 0;
   };
 
-  cancelBtn.onclick = () => {
-    dialog.style.display = "none";
-  };
-
-  // --- 検索処理 ---
-  searchBtn.onclick = () => {
+ // --- 検索処理 ---
+searchBtn.onclick = () => {
   const element = document.getElementById("element").value;
   const resultsDiv = document.getElementById("results");
 
-  // アビリティと属性でフィルター
   const results = quests.filter(q =>
     (!element || q.element === element || q.element === "all")
- &&
-     q.require.every(ab => selectedAbilities.includes(ab))  // ←これでOK
-);
+    && q.require.every(ab => selectedAbilities.includes(ab))
+  );
 
   if(results.length){
-    // 検索結果をクリック可能に表示
     resultsDiv.innerHTML = results.map((q,index) => 
-      `<div class="resultItem" data-index="${index}" style="cursor:pointer; color:#4CAF50; text-decoration:underline;">・${q.name}</div>`
+      `<div class="resultItem" data-index="${index}" style="cursor:pointer; color:#2196F3; text-decoration:underline;">・${q.name}</div>`
     ).join("");
 
     // クリックでポップアップ表示
@@ -277,15 +271,23 @@
       item.onclick = () => {
         const q = results[item.dataset.index];
         document.getElementById("resultTitle").textContent = q.name;
-        document.getElementById("resultDescription").textContent = q.description;
+        document.getElementById("resultDescription").innerHTML = q.description.replace(/\n/g,"<br>");
         document.getElementById("resultURL").href = q.url;
         document.getElementById("resultDialog").style.display = "block";
       };
     });
+
   } else {
     resultsDiv.innerHTML = "該当するクエストはありません。";
   }
 };
+
+// ×ボタンで閉じる
+document.getElementById("closeResult").onclick = () => {
+  document.getElementById("resultDialog").style.display = "none";
+};
+
+
 
    // 結果クリックで詳細表示
   document.querySelectorAll(".resultItem").forEach(item => {
@@ -303,15 +305,20 @@
 
 </script>
 <!-- 検索結果ポップアップ -->
-<div id="resultDialog" style="display:none; position:fixed; z-index:11; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-  <div style="background:#fff; margin:10% auto; padding:20px; width:90%; max-width:480px; border-radius:15px; font-size:1.2em; line-height:1.6; text-align:left;">
+<div id="resultDialog" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+  <div style="background:#fff; margin:10% auto; padding:20px; width:90%; max-width:480px; border-radius:15px; font-size:1.2em; line-height:1.6; text-align:left; position:relative;">
+    
+    <!-- 右上の閉じるボタン -->
+    <span id="closeResult" style="position:absolute; top:10px; right:15px; font-size:1.5em; font-weight:bold; cursor:pointer; z-index:10000;">&times;</span>
+    
     <h2 id="resultTitle"></h2>
     <p id="resultDescription"></p>
-    <a id="resultURL" href="" target="_blank" style="color:#4CAF50; text-decoration:underline;">攻略ページへ</a>
-    <br><br>
-    <button id="closeResult" style="background:#4CAF50; color:#fff; padding:10px 20px; border:none; border-radius:8px;">閉じる</button>
+    <a id="resultURL" href="" target="_blank" style="color:#1E90FF; text-decoration:underline;">攻略ページへ</a>
+    
   </div>
 </div>
+
+
 
 </body>
 </html>

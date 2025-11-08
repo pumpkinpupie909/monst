@@ -180,6 +180,48 @@
 <button id="openAbilityDialog">アビリティを選択</button>
 <br>
 <button id="searchButton" disabled>検索</button>
+  <br>
+<!-- 🔹 キラー一覧を開くボタン -->
+<button id="showKillersBtn" style="font-size: 0.9em; padding: 6px 10px; margin-top: 5px;">
+  🗡️ キラー一覧を表示
+</button>
+
+<!-- 🔹 キラー一覧（クリックで詳細なし） -->
+<div id="killersList" style="
+  display: none;
+  margin-top: 10px;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  background: #fff;
+">
+  <strong>🔸 キラー・封じ一覧</strong><br><br>
+
+  <!-- 🔍 検索ボックス -->
+  <input id="killerSearch" type="text" placeholder="キラー名・種族名で検索" style="
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 13px;
+  ">
+
+  <table id="killerTable" style="width:100%; border-collapse: collapse; font-size: 13px;">
+    <tr>
+      <th style="border-bottom:1px solid #ccc;">キラー/封じ名</th>
+      <th style="border-bottom:1px solid #ccc;">対象種族</th>
+      <th style="border-bottom:1px solid #ccc;">効果説明</th>
+    </tr>
+    <tr><td>神キラー</td><td>神族</td><td>神族の敵に対して攻撃力1.5倍。</td></tr>
+    <tr><td>神王封じ</td><td>神族・魔王</td><td>神族と魔王の両方に対して有効。</td></tr>
+    <tr><td>魔族キラー</td><td>魔族</td><td>魔族の敵に対して攻撃力が上昇。</td></tr>
+    <tr><td>幻獣封じ</td><td>幻獣・魔族</td><td>幻獣と魔族の敵に対して攻撃力が上昇。</td></tr>
+    <tr><td>妖精キラー</td><td>妖精族</td><td>妖精族の敵に対して有効。</td></tr>
+  </table>
+</div>
+
 
 <div id="results"></div>
 
@@ -253,7 +295,7 @@
     {name:"轟絶サバイール", element:"水", require:["重力バリア","魔法陣","ダメージウォール","貫通"],description:"雑魚：幻獣・妖精・聖騎士・幻妖\nボス：幻妖\n\n",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/524468"},
     {name:"爆絶ホラー", element:"火", require:["マインスイーパー/飛行","ウィンド"],description:"雑魚：魔族・幻獣\nボス：亜人\n\n",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/514346"},
     {name:"爆絶アアル", element:"闇", require:["ダメージウォール","ワープ","反射","ブロック"],description:"雑魚：神・魔族・幻獣・獣\nボス：獣\n\n反射編成必須",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/387114"},
-　　{name:"EXリズム", element:"光", require:["減速床"],description:"雑魚：魔族・亜人・ロボット\nボス：亜人\n\nダメージウォールとロックオン地雷が展開されるが、\n雑魚処理できれば展開されないので対策していなくても問題ない",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/504985"},
+　　{name:"EXリズム", element:"光", require:["減速床"],description:"雑魚：魔族・亜人・ロボット\nボス：亜人\n\nダメージウォールとロックオン地雷が展開されるが、雑魚処理できれば展開されないので対策していなくても問題ない",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/504985"},
     {name:"EXネッテキシ", element:"木", require:["ダメージウォール","マインスイーパー/飛行","減速壁"],description:"雑魚：ロボット・幻獣・魔族\nボス：魔人\n\n貫通推奨",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/461556"},
 　　{name:"EX涅槃寂静", element:"火", require:["魔法陣","貫通","ダメージウォール","ワープ","マインスイーパー/飛行"],description:"雑魚：幻獣・ドラゴン・ユニバース\nボス：魔王\n\n",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/344600"},
 　　{name:"禁忌深淵火", element:"水", require:["ダメージウォール","ワープ","マインスイーパー/飛行","貫通"],description:"雑魚：魔族・幻獣・神・魔王・ユニバース\nボス：魔人\n\n伝染霧対策必須\n兵命削り推奨",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/404307"},
@@ -350,6 +392,28 @@ resultsDiv.querySelectorAll(".quest-item").forEach(item => {
 });
 
   };
+  <script>
+// 🗡️ キラー一覧を開閉
+document.getElementById("showKillersBtn").addEventListener("click", () => {
+  const list = document.getElementById("killersList");
+  list.style.display = list.style.display === "none" ? "block" : "none";
+});
+
+// 🔍 検索絞り込み機能
+document.getElementById("killerSearch").addEventListener("input", function() {
+  const keyword = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#killerTable .killer");
+  rows.forEach(row => {
+    const name = row.getAttribute("data-name").toLowerCase();
+    const target = row.getAttribute("data-target").toLowerCase();
+    const desc = row.getAttribute("data-desc").toLowerCase();
+    // 検索対象を種族名・キラー対象・説明に拡張
+    row.style.display = (name.includes(keyword) || target.includes(keyword) || desc.includes(keyword))
+      ? ""
+      : "none";
+  });
+});
+</script>
 </script>
 
   <!-- クエスト詳細ポップアップ -->

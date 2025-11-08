@@ -157,6 +157,17 @@
 .quest-item:hover {
   color: #0055a4;
 }
+  
+/* クエスト詳細ポップアップが非表示のときはクリックをブロックしない */
+#questDetailPopup:not([style*="display: block"]) {
+  pointer-events: none;
+}
+
+#openAbilityDialog,
+#killerListButton {
+  position: relative;
+  z-index: 2001;
+}
 
 </style>
 </head>

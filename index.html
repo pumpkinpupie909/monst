@@ -107,6 +107,57 @@
   padding: 8px 12px; /* 内側に余白を追加 */
   width: 350px; /* ボックスの横幅を広く */
 }
+  /* クエスト詳細ポップアップ */
+.popup {
+  display: none; /* 最初は非表示 */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* 背景を半透明に */
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  width: 80%;
+  max-width: 420px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.close-btn {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* 検索結果のクエスト名をクリックできるように */
+.quest-item {
+  cursor: pointer;
+  color: #0078d7;
+  text-decoration: underline;
+}
+.quest-item:hover {
+  color: #0055a4;
+}
+
 </style>
 </head>
 <body>
@@ -156,7 +207,7 @@
 <script>
   // --- クエストデータ（自分で追加OK） ---
   const quests = [
-     {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"]},
+     {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"],description:"aaa"},
     {name:"天魔の孤城試練２", element:"木", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","反射"]},
     {name:"天魔の孤城試練３", element:"火", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","貫通"]},
     {name:"天魔の孤城試練４", element:"光", require:["マインスイーパー/飛行","減速壁","反射"]},
@@ -263,10 +314,47 @@
 );
 
     resultsDiv.innerHTML = results.length
-      ? results.map(q => `・${q.name}`).join("<br>")
-      : "該当するクエストはありません。";
+  ? results.map(q => `・<span class="quest-item" data-name="${q.name}">${q.name}</span>`).join("<br>")
+  : "該当するクエストはありません。";
+
+// ✅ クエスト名クリックで詳細ポップアップを表示
+resultsDiv.querySelectorAll(".quest-item").forEach(item => {
+  item.addEventListener("click", () => {
+    const questName = item.dataset.name;
+    const quest = quests.find(q => q.name === questName);
+
+    if (quest) {
+      const popup = document.getElementById("questDetailPopup");
+      const popupDetail = document.getElementById("popupDetail");
+      const closeBtn = document.getElementById("closePopup");
+
+      popupDetail.innerHTML = `
+        <h3>${quest.name}</h3>
+        <p><strong>属性:</strong> ${quest.element}</p>
+        <p><strong>必要ギミック:</strong> ${quest.require.join(" / ")}</p>
+        <p><strong>詳細:</strong> ${quest.description || "（詳細未登録）"}</p>
+      `;
+
+      popup.style.display = "flex";
+
+      closeBtn.onclick = () => (popup.style.display = "none");
+      popup.onclick = e => {
+        if (e.target === popup) popup.style.display = "none";
+      };
+    }
+  });
+});
+
   };
 </script>
+
+  <!-- クエスト詳細ポップアップ -->
+<div id="questDetailPopup" class="popup">
+  <div class="popup-content">
+    <span id="closePopup" class="close-btn">&times;</span>
+    <div id="popupDetail"></div>
+  </div>
+</div>
 
 </body>
 </html>

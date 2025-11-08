@@ -263,8 +263,8 @@
   const results = quests.filter(q =>
     (!element || q.element === element || q.element === "all")
  &&
-    selectedAbilities.every(ab => q.require.includes(ab))  // ←ここを q.require に変更
-  );
+     q.require.every(ab => selectedAbilities.includes(ab))  // ←これでOK
+);
 
   if(results.length){
     // 検索結果をクリック可能に表示

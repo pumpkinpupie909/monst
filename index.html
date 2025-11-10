@@ -303,6 +303,11 @@ document.getElementById("closeResult").onclick = () => {
   document.getElementById("resultDialog").style.display = "none";
 };
 
+// --- ポップアップ右上の×ボタン動作 ---
+document.querySelector("#resultDialog .closeButton").onclick = () => {
+  document.getElementById("resultDialog").style.display = "none";
+};
+
 </script>
 <!-- 検索結果ポップアップ -->
 <div id="resultDialog" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
@@ -313,7 +318,7 @@ document.getElementById("closeResult").onclick = () => {
     
     <h2 id="resultTitle"></h2>
     <p id="resultDescription"></p>
-    <a id="resultURL" href="" target="_blank" style="color:#1E90FF; text-decoration:underline;">攻略ページへ</a>
+    <a id="resultURL" href="" target="_blank" style="color:#1E90FF; text-decoration:underline;">▶攻略ページへ</a>
     
   </div>
 </div>

@@ -288,6 +288,7 @@
   };
 
   // ×ボタン（閉じる）はここで一度だけ登録しておく
+  const closeBtn = document.getElementById("closeResult");
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       document.getElementById("resultDialog").style.display = "none";

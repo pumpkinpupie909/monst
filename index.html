@@ -233,6 +233,7 @@
   const confirmBtn = document.getElementById("confirmAbility");
   const cancelBtn = document.getElementById("cancelAbility");
   const searchBtn = document.getElementById("searchButton");
+  const closeBtn = document.getElementById("closeResult"); // ← ここで取得
   let selectedAbilities = [];
 
   openDialog.onclick = () => {
@@ -247,56 +248,50 @@
       ? selectedAbilities.join(", ")
       : "アビリティを選択";
 
-    // ✅ アビリティを選んだ時だけ検索ボタンを押せる
     searchBtn.disabled = selectedAbilities.length === 0;
   };
 
- // --- 検索処理 ---
-searchBtn.onclick = () => {
-  const element = document.getElementById("element").value;
-  const resultsDiv = document.getElementById("results");
+  cancelBtn.onclick = () => {
+    dialog.style.display = "none";
+  };
 
-  const results = quests.filter(q =>
-    (!element || q.element === element || q.element === "all")
-    && q.require.every(ab => selectedAbilities.includes(ab))
-  );
+  // --- 検索処理 ---
+  searchBtn.onclick = () => {
+    const element = document.getElementById("element").value;
+    const resultsDiv = document.getElementById("results");
 
-  if(results.length){
-    resultsDiv.innerHTML = results.map((q,index) => 
-      `<div class="resultItem" data-index="${index}" style="cursor:pointer; color:#2196F3; text-decoration:underline;">・${q.name}</div>`
-    ).join("");
+    const results = quests.filter(q =>
+      (!element || q.element === element || q.element === "all")
+      && q.require.every(ab => selectedAbilities.includes(ab))
+    );
 
-    // クリックでポップアップ表示
-    document.querySelectorAll(".resultItem").forEach(item => {
-      item.onclick = () => {
-        const q = results[item.dataset.index];
-        document.getElementById("resultTitle").textContent = q.name;
-        document.getElementById("resultDescription").innerHTML = q.description.replace(/\n/g,"<br>");
-        document.getElementById("resultURL").href = q.url;
-        document.getElementById("resultDialog").style.display = "block";
-      };
+    if (results.length) {
+      resultsDiv.innerHTML = results.map((q, index) =>
+        `<div class="resultItem" data-index="${index}" style="cursor:pointer; color:#2196F3; text-decoration:underline;">・${q.name}</div>`
+      ).join("");
+
+      // クリックでポップアップ表示（ここでのみバインドする）
+      document.querySelectorAll(".resultItem").forEach(item => {
+        item.onclick = () => {
+          const q = results[item.dataset.index];
+          document.getElementById("resultTitle").textContent = q.name;
+          document.getElementById("resultDescription").innerHTML = q.description.replace(/\n/g, "<br>");
+          document.getElementById("resultURL").href = q.url;
+          document.getElementById("resultDialog").style.display = "block";
+        };
+      });
+
+    } else {
+      resultsDiv.innerHTML = "該当するクエストはありません。";
+    }
+  };
+
+  // ×ボタン（閉じる）はここで一度だけ登録しておく
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      document.getElementById("resultDialog").style.display = "none";
     });
-
-  } else {
-    resultsDiv.innerHTML = "該当するクエストはありません。";
   }
-};
-
-
-   // 結果クリックで詳細表示
-  document.querySelectorAll(".resultItem").forEach(item => {
-      item.onclick = () => {
-        const q = results[item.dataset.index];
-        resultTitle.textContent = q.name;
-        resultDescription.textContent = q.description;
-        resultURL.href = q.url;
-        resultDialog.style.display = "block";
-      };
-    });
-  document.getElementById("closeResult").onclick = () => {
-  document.getElementById("resultDialog").style.display = "none";
-};
-
 </script>
 <!-- 検索結果ポップアップ -->
 <div id="resultDialog" style="

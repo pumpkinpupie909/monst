@@ -3,161 +3,244 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>モンスト適正検索</title>
+<title>モンスト適正クエスト検索</title>
 <style>
-  body {
-    font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-    margin: 20px;
-    background: #fff;
-    color: #000;
-    text-align: center;
-  }
-  h1 {
-    font-size: 2em;
-    margin-bottom: 20px;
-  }
-
-  /* ラベル文字を大きく */
-  label {
-    font-size: 1.4em;
-    font-weight: bold;
-  }
-
-  select, button {
-    margin: 10px 0;
-  }
-
-  button {
-    width: 100%;
-    padding: 20px;
-    font-size: 1.5em;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  /* アビリティ選択ボタン */
-  #openAbilityDialog {
-    background: #fff;
-    color: #000;
-    border: 2px solid #4CAF50;
-  }
-
-  /* 検索ボタン */
-  #searchButton {
-    background: #4CAF50;
-    color: #fff;
-    border: none;
-  }
-
-  /* 検索ボタン無効時 */
-  #searchButton:disabled {
-    background: #ccc;
-    color: #666;
-    cursor: not-allowed;
-  }
-
-  #results {
-    margin-top: 30px;
-    font-size: 1.2em;
-  }
-
-  /* ポップアップ */
-  #abilityDialog {
-    display: none;
-    position: fixed;
-    z-index: 10;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-  }
-#abilityDialogContent {
-  background: #fff;
-  margin: 5% auto;
+body {
+  background: #001a2e;
+  color: white;
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  text-align: center;
   padding: 20px;
-  width: 90%;
-  max-width: 480px;
-  max-height: 80vh; /* 画面の高さの80％まで */
-  overflow-y: auto;  /* 縦スクロール可能 */
-  border-radius: 15px;
-  font-size: 1.2em;
-  line-height: 1.6;
+}
+
+/* 属性ボタン */
+.element-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.element-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  filter: brightness(50%);
+}
+.element-btn:hover { transform: scale(1.08); }
+.element-btn.selected {
+  filter: brightness(100%);
+  transform: scale(1.1);
+}
+.element-all  { background-image: url('ability_z.png'); }
+.element-fire { background-image: url('ability_f.png'); }
+.element-water{ background-image: url('ability_w.png'); }
+.element-wood { background-image: url('ability_t.png'); }
+.element-light{ background-image: url('ability_r.png'); }
+.element-dark { background-image: url('ability_d.png'); }
+
+/* アビリティ */
+.ability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px 8px;
+  justify-items: center;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.ability-row-bottom {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-top: 8px;
+}
+.ability-btn {
+  width: 130px;
+  height: 36px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.ability-btn:hover { transform: scale(1.05); }
+.ability-btn:active { transform: scale(0.95); }
+
+/* 押す前 */
+#AGB { background-image: url('AGB_off.png'); }
+#ADW { background-image: url('ADW_off.png'); }
+#AW  { background-image: url('AW_off.png'); }
+#MS  { background-image: url('MS_off.png'); }
+#AB  { background-image: url('AB_off.png'); }
+#AWI { background-image: url('AWI_off.png'); }
+#AM  { background-image: url('AM_off.png'); }
+#AGK { background-image: url('AGK_off.png'); }
+#AT  { background-image: url('AT_off.png'); }
+#AGY { background-image: url('AGY_off.png'); }
+#H   { background-image: url('H_off.png'); }
+#K   { background-image: url('K_off.png'); }
+
+/* 押した後 */
+#AGB.selected { background-image: url('AGB_on.png'); }
+#ADW.selected { background-image: url('ADW_on.png'); }
+#AW.selected  { background-image: url('AW_on.png'); }
+#MS.selected  { background-image: url('MS_on.png'); }
+#AB.selected  { background-image: url('AB_on.png'); }
+#AWI.selected { background-image: url('AWI_on.png'); }
+#AM.selected  { background-image: url('AM_on.png'); }
+#AGK.selected { background-image: url('AGK_on.png'); }
+#AT.selected  { background-image: url('AT_on.png'); }
+#AGY.selected { background-image: url('AGY_on.png'); }
+#H.selected   { background-image: url('H_on.png'); }
+#K.selected   { background-image: url('K_on.png'); }
+
+/* 決定・リセット */
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 24px;
+}
+.action-btn {
+  width: 120px;
+  height: 45px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.action-btn:hover { transform: scale(1.05); }
+#resetBtn { background-image: url('reset.png'); }
+#searchBtn { background-image: url('kettei.png'); }
+
+/* 結果 */
+#results {
+  margin-top: 30px;
   text-align: left;
-  display: flex;
-  flex-direction: column;
+  max-width: 600px;
+  margin-inline: auto;
+}
+.result-item {
+  background: rgba(255,255,255,0.1);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.result-item:hover {
+  background: rgba(255,255,255,0.2);
 }
 
-
-#abilityDialog label {
-  display: flex;
-  align-items: center;  /* チェックボックスと文字を揃える */
-  margin: 8px 0;
-  font-size: 1.1em;
+/* ポップアップ */
+#popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #223;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
-
-  #abilityDialog input[type=checkbox] {
-    transform: scale(1.5);
-    margin-right: 8px;
-  }
-  #abilityDialog button {
-    margin-top: 15px;
-    margin-right: 10px;
-    padding: 10px 20px;
-    font-size: 1em;
-    border: none;
-    border-radius: 8px;
-    background: #4CAF50;
-    color: #fff;
-  }
+#popup h3 { margin-top: 0; }
+#popup p { white-space: pre-line; }
+#popup a { color: #4fc3f7; }
+#closePopup {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+}
 </style>
 </head>
 <body>
 
-<h1>モンスト適正検索</h1>
+<h2>モンスト適正クエスト検索</h2>
 
-<label for="element">属性:</label><br>
-<select id="element">
-  <option value="">--選択--</option>
-  <option value="火">火</option>
-  <option value="水">水</option>
-  <option value="木">木</option>
-  <option value="光">光</option>
-  <option value="闇">闇</option>
-</select>
+<!-- 属性 -->
+<div class="element-row">
+  <div class="element-btn element-all selected"  data-element="全"></div>
+  <div class="element-btn element-fire"  data-element="火"></div>
+  <div class="element-btn element-water" data-element="水"></div>
+  <div class="element-btn element-wood"  data-element="木"></div>
+  <div class="element-btn element-light" data-element="光"></div>
+  <div class="element-btn element-dark"  data-element="闇"></div>
+</div>
 
-<br><br>
+<!-- アビリティ -->
+<div class="ability-grid">
+  <div class="ability-btn" id="AGB" title="重力バリア"></div>
+  <div class="ability-btn" id="ADW" title="ダメージウォール"></div>
+  <div class="ability-btn" id="AW"  title="ワープ"></div>
+  <div class="ability-btn" id="MS"  title="マインスイーパー/飛行"></div>
+  <div class="ability-btn" id="AB"  title="ブロック"></div>
+  <div class="ability-btn" id="AWI" title="ウィンド"></div>
+  <div class="ability-btn" id="AM"  title="魔法陣/ブースト"></div>
+  <div class="ability-btn" id="AGK" title="減速壁"></div>
+  <div class="ability-btn" id="AT"  title="転送壁"></div>
+  <div class="ability-btn" id="AGY" title="減速床"></div>
+</div>
+<div class="ability-row-bottom">
+  <div class="ability-btn" id="H" title="反射"></div>
+  <div class="ability-btn" id="K" title="貫通"></div>
+</div>
 
-<label>撃種/アビリティ（複数選択可）：</label><br>
-<button id="openAbilityDialog">アビリティを選択</button>
-<br>
-<button id="searchButton" disabled>検索</button>
+<!-- ボタン -->
+<div class="button-row">
+  <div class="action-btn" id="resetBtn"></div>
+  <div class="action-btn" id="searchBtn"></div>
+</div>
 
+<!-- 検索結果 -->
 <div id="results"></div>
 
-<!-- アビリティ選択ポップアップ -->
-<div id="abilityDialog">
-  <div id="abilityDialogContent">
-    <h2>アビリティを選択</h2>
-    <label><input type="checkbox" value="反射">反射</label>
-    <label><input type="checkbox" value="貫通">貫通</label>
-    <label><input type="checkbox" value="重力バリア">重力バリア</label>
-    <label><input type="checkbox" value="ダメージウォール">ダメージウォール</label>
-    <label><input type="checkbox" value="ワープ">ワープ</label>
-    <label><input type="checkbox" value="マインスイーパー/飛行">マインスイーパー/飛行</label>
-    <label><input type="checkbox" value="ブロック">ブロック</label>
-    <label><input type="checkbox" value="ウィンド">ウィンド</label>
-    <label><input type="checkbox" value="魔法陣">魔法陣</label>
-    <label><input type="checkbox" value="減速壁">減速壁</label>
-    <label><input type="checkbox" value="転送壁">転送壁</label>
-    <label><input type="checkbox" value="減速床">減速床</label>
-    <button id="confirmAbility">決定</button>
-    <button id="cancelAbility">閉じる</button>
-  </div>
+<!-- ポップアップ -->
+<div id="popup">
+  <div id="closePopup">×</div>
+  <h3 id="popupTitle"></h3>
+  <p id="popupDesc"></p>
+  <a id="popupURL" href="#" target="_blank">▶攻略サイトへ</a>
 </div>
 
 <script>
-  // --- クエストデータ（自分で追加OK） ---
-  const quests = [
-   {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"],description:"雑魚：幻獣・神・魔族\nボス：神\n \n感染毒があるので異常状態回復系が有利",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354183"},
+const elementButtons = document.querySelectorAll('.element-btn');
+const abilityButtons = document.querySelectorAll('.ability-btn');
+const results = document.getElementById('results');
+const popup = document.getElementById('popup');
+const popupTitle = document.getElementById('popupTitle');
+const popupDesc = document.getElementById('popupDesc');
+const popupURL = document.getElementById('popupURL');
+const closePopup = document.getElementById('closePopup');
+
+// 属性ボタン（1つだけ選択）
+elementButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    elementButtons.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+// アビリティ（複数選択可）
+abilityButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('selected');
+  });
+});
+
+// クエストデータ例
+const quests = [
+  {name:"天魔の孤城試練１", element:"水", require:["重力バリア","ワープ","マインスイーパー/飛行","反射"],description:"雑魚：幻獣・神・魔族\nボス：神\n \n感染毒があるので異常状態回復系が有利",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354183"},
     {name:"天魔の孤城試練２", element:"木", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","反射"],description:"雑魚：サムライ・ドラゴン\nボス：サムライ",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354184"},
     {name:"天魔の孤城試練３", element:"火", require:["ダメージウォール","マインスイーパー/飛行","魔法陣","貫通"],description:"雑魚：神・魔族・幻獣\nボス；神\n \n個別HPなのである程度対応していなくても攻略可",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354185"},
     {name:"天魔の孤城試練４", element:"光", require:["マインスイーパー/飛行","減速壁","反射"],description:"雑魚：神\nボス：神\n　\nブロックがあるとやりやすい",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/354186"},
@@ -227,118 +310,47 @@
     {name:"未開の砂丘拠点２２", element:"木", require:["重力バリア","ダメージウォール","ブロック","反射"],description:"雑魚：亜人・幻獣・サムライ・ユニバース\nボス：ユニバース\n\n",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/522737"},
     {name:"超究極イザナミ", element:"水", require:["ブロック","魔法陣","ウィンド",],description:"雑魚：魔族・ドラゴン・妖精・鉱物・ロボット・神\n中ボス：亜人・聖騎士\nボス：神\n\n",url:"https://xn--eckwa2aa3a9c8j8bve9d.gamewith.jp/article/show/524447"},
     /*テンプレ   {name:"", element:"", require:["","","",],description:"雑魚：\nボス：\n\n",url:""},   */
-  ];
+];
 
-  const openDialog = document.getElementById("openAbilityDialog");
-  const dialog = document.getElementById("abilityDialog");
-  const confirmBtn = document.getElementById("confirmAbility");
-  const cancelBtn = document.getElementById("cancelAbility");
-  const searchBtn = document.getElementById("searchButton");
-  const closeBtn = document.getElementById("closeResult"); // ← ここで取得
-  let selectedAbilities = [];
+// リセット
+document.getElementById('resetBtn').addEventListener('click', () => {
+  elementButtons.forEach(b => b.classList.remove('selected'));
+  document.querySelector('.element-all').classList.add('selected');
+  abilityButtons.forEach(b => b.classList.remove('selected'));
+  results.innerHTML = '';
+});
 
-  openDialog.onclick = () => {
-    dialog.style.display = "block";
-  };
+// 検索
+document.getElementById('searchBtn').addEventListener('click', () => {
+  const selectedElement = document.querySelector('.element-btn.selected')?.dataset.element || "全";
+  const selectedAbilities = Array.from(document.querySelectorAll('.ability-btn.selected')).map(b => b.title);
+  
+  const matched = quests.filter(q => {
+    const elementMatch = (selectedElement === "全" || q.element === selectedElement);
+    // ✅ 「クエストのrequireが、選択アビリティの中に全部含まれている」ならマッチ
+    const abilityMatch = q.require.every(req => selectedAbilities.includes(req));
+    return elementMatch && abilityMatch;
+  });
 
-  confirmBtn.onclick = () => {
-    const checked = document.querySelectorAll("#abilityDialog input:checked");
-    selectedAbilities = Array.from(checked).map(cb => cb.value);
-    dialog.style.display = "none";
-    openDialog.textContent = selectedAbilities.length
-      ? selectedAbilities.join(", ")
-      : "アビリティを選択";
+  results.innerHTML = matched.length ? 
+    matched.map(q => `<div class="result-item" data-name="${q.name}">${q.name}</div>`).join('')
+    : '<p>該当するクエストはありません。</p>';
 
-    searchBtn.disabled = selectedAbilities.length === 0;
-  };
-
-  cancelBtn.onclick = () => {
-    dialog.style.display = "none";
-  };
-
-  // --- 検索処理 ---
-  searchBtn.onclick = () => {
-    const element = document.getElementById("element").value;
-    const resultsDiv = document.getElementById("results");
-
-    const results = quests.filter(q =>
-      (!element || q.element === element || q.element === "all")
-      && q.require.every(ab => selectedAbilities.includes(ab))
-    );
-
-    if (results.length) {
-      resultsDiv.innerHTML = results.map((q, index) =>
-        `<div class="resultItem" data-index="${index}" style="cursor:pointer; color:#2196F3; text-decoration:underline;">・${q.name}</div>`
-      ).join("");
-
-      // クリックでポップアップ表示（ここでのみバインドする）
-      document.querySelectorAll(".resultItem").forEach(item => {
-        item.onclick = () => {
-          const q = results[item.dataset.index];
-          document.getElementById("resultTitle").textContent = q.name;
-          document.getElementById("resultDescription").innerHTML = q.description.replace(/\n/g, "<br>");
-          document.getElementById("resultURL").href = q.url;
-          document.getElementById("resultDialog").style.display = "block";
-        };
-      });
-
-    } else {
-      resultsDiv.innerHTML = "該当するクエストはありません。";
-    }
-  };
-
-  // ×ボタン（閉じる）はここで一度だけ登録しておく
-  const closeBtn = document.getElementById("closeResult");
-  if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-      document.getElementById("resultDialog").style.display = "none";
+  // 結果クリックでポップ表示
+  document.querySelectorAll('.result-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const quest = quests.find(q => q.name === item.dataset.name);
+      popupTitle.textContent = quest.name;
+      popupDesc.textContent = quest.description;
+      popupURL.href = quest.url;
+      popup.style.display = 'block';
     });
-  }
-</script>
-<!-- 検索結果ポップアップ -->
-<div id="resultDialog" style="
-  display:none;
-  position:fixed;
-  z-index:9999;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.5);
-">
-  <div style="
-    background:#fff;
-    margin:10% auto;
-    padding:20px;
-    width:90%;
-    max-width:480px;
-    border-radius:15px;
-    font-size:1.2em;
-    line-height:1.6;
-    text-align:left;
-    position:relative;
-    z-index:10000;  /* ← 白い部分を上に */
-  ">
-    
-    <!-- 右上の閉じるボタン -->
-    <span id="closeResult" style="
-      position:absolute;
-      top:10px;
-      right:15px;
-      font-size:1.8em;
-      font-weight:bold;
-      cursor:pointer;
-      color:#333;
-      z-index:10001; /* ← 最前面に */
-    ">&times;</span>
-    
-    <h2 id="resultTitle"></h2>
-    <p id="resultDescription"></p>
-    <a id="resultURL" href="" target="_blank" style="color:#1E90FF; text-decoration:underline;">▶ 攻略ページへ</a>
-    
-  </div>
-</div>
+  });
+});
 
+// ポップを閉じる
+closePopup.addEventListener('click', () => popup.style.display = 'none');
+</script>
 
 </body>
 </html>
